@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
-import { Bike, MapPin, Plus, Share2, Download, Upload, Trash2, Search, LocateFixed, Route, X, ChevronDown, Flag, Fuel, TentTree, Camera, ShoppingBag, Coffee, Wrench, Navigation, Menu, Check, Info } from 'lucide-react'
+import { Bike, MapPin, Plus, Share2, Download, Upload, Trash2, Search, LocateFixed, Route, X, ChevronDown, Fuel, TentTree, Camera, ShoppingBag, Coffee, Wrench, Navigation, Menu, Check, Info } from 'lucide-react'
 import type { Category, Point, Trip } from './types'
 
 const STORAGE = 'mototrip.trips.v1'
@@ -48,7 +48,7 @@ export default function App() {
   useEffect(()=>{if(!notice)return;const t=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(t)},[notice])
 
   const updateActive=useCallback((fn:(trip:Trip)=>Trip)=>setTrips(prev=>prev.map(t=>t.id===activeId?fn(t):t)),[activeId])
-  const addPoint=(lat:number,lon:number)=>{if(!active)return; const n=points.length; const category:Category= n===0?'start':(addCategory==='start'||addCategory==='finish'?'waypoint':addCategory); const point:Point={id:uid(),name:category==='start'?'Старт':category==='finish'?'Финиш':categories.find(c=>c.id===category)?.label??'Точка',lat,lon,category,note:''}; updateActive(t=>({...t,updatedAt:Date.now(),points:[...t.points,point]}));setSelected(point.id);setAdding(false);setNotice('Точка добавлена') }
+  const addPoint=(lat:number,lon:number)=>{if(!active)return; const n=points.length; const category:Category= n===0?'start':(addCategory==='start'||addCategory==='finish'?'waypoint':addCategory); const point:Point={id:uid(),name:category==='start'?'Старт':categories.find(c=>c.id===category)?.label??'Точка',lat,lon,category,note:''}; updateActive(t=>({...t,updatedAt:Date.now(),points:[...t.points,point]}));setSelected(point.id);setAdding(false);setNotice('Точка добавлена') }
   const patchPoint=(id:string,patch:Partial<Point>)=>updateActive(t=>({...t,updatedAt:Date.now(),points:t.points.map(p=>p.id===id?{...p,...patch}:p)}))
   const removePoint=(id:string)=>{updateActive(t=>{let next=t.points.filter(p=>p.id!==id); if(next.length){if(!next.some(p=>p.category==='start'))next[0]={...next[0],category:'start'}; if(!next.some(p=>p.category==='finish')&&next.length>1)next[next.length-1]={...next[next.length-1],category:'finish'}} return {...t,points:next,updatedAt:Date.now()}});setSelected(null)}
   const createTrip=()=>{const t:Trip={id:uid(),name:'Новый маршрут',description:'',updatedAt:Date.now(),points:[]};setTrips(p=>[t,...p]);setActiveId(t.id);setSelected(null);clearRoute();setMobilePanel(true)}
