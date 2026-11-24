@@ -16,3 +16,11 @@
 
 .field-hint{font-size:9px;color:#7f8e82;font-weight:500;line-height:1.4}.reset-stop-time{justify-self:start;padding:0;margin-top:-3px}
 @media(max-width:650px){.route-stats{padding:9px 2px}.route-stats span{font-size:7px;letter-spacing:.5px}.route-stats strong{font-size:12px}}
+
+/* Route point editor stays attached to the selected stop instead of the end of the list. */
+.point-item{min-width:0}
+.point-item .point-editor{width:100%;margin:4px 0 8px;position:relative;z-index:2;box-shadow:0 5px 16px #0003}
+.point-item .point-row.selected{border-color:#b86b43}
+.poi-map-marker{width:36px;height:36px;display:grid;place-items:center;border:2px solid #fff;border-radius:11px 11px 11px 4px;background:var(--poi-color);box-shadow:0 2px 7px #0008}
+.poi-map-marker svg{display:block;width:20px;height:20px;filter:none}
+.poi-marker-wrap{background:transparent;border:0}
