@@ -82,7 +82,7 @@ function overpassQuery(coords:[number,number][],selected:PoiCategory[]) {
     service:['["amenity"="car_repair"]','["shop"~"car_repair|motorcycle_repair"]','["craft"="car_repair"]']
   }
   const filters=selected.flatMap(category=>selectors[category])
-  const around=coords.flatMap(([lat,lon])=>filters.map(filter=>`nwr(around:3500,${lat.toFixed(5)},${lon.toFixed(5)})${filter};`)).join('\\n')
+  const around=coords.flatMap(([lat,lon])=>filters.map(filter=>`nwr(around:3500,${lat.toFixed(5)},${lon.toFixed(5)})${filter};`)).join('\n')
   return `[out:json][timeout:45];(${around});out center tags;`
 }
 async function requestOverpass(query:string, apiKey:string):Promise<{elements:OverpassElement[]}> {
