@@ -34,7 +34,18 @@ const sample: Trip = { id:'sample', name:'Выходные на Ладоге', d
 function loadTrips(): Trip[] { try { const raw=localStorage.getItem(STORAGE); return raw ? JSON.parse(raw) as Trip[] : [sample] } catch { return [sample] } }
 function encodeTrip(trip:Trip) { const bytes=new TextEncoder().encode(JSON.stringify(trip)); let binary=''; bytes.forEach(b=>binary+=String.fromCharCode(b)); return btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'') }
 function decodeTrip(value:string):Trip|null { try { const base=value.replaceAll('-','+').replaceAll('_','/'); const binary=atob(base); const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0)); const obj=JSON.parse(new TextDecoder().decode(bytes)) as Trip; if(!obj.name||!Array.isArray(obj.points)) return null; return {...obj,id:uid(),updatedAt:Date.now()} } catch { return null } }
-function markerIcon(category:Category) { if(category==='sight'||category==='fuel'||category==='camp'||category==='shop'||category==='food'||category==='service') return poiMarkerIcon(category); return L.divIcon({className:'custom-marker-wrap',html:`<div class="map-marker ${category}"><span>${icons[category]}</span></div>`,iconSize:[38,44],iconAnchor:[19,40],popupAnchor:[0,-38]}) }
+const routeMarkerGlyphs: Record<'start'|'finish'|'waypoint',string> = {
+  start:'<path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/>',
+  finish:'<path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5Z"/><path d="M9 4v8m4-8v8"/>',
+  waypoint:'<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>'
+}
+const routeMarkerColors: Record<'start'|'finish'|'waypoint',string> = { start:'#d77a3d', finish:'#d77a3d', waypoint:'#53616c' }
+function markerIcon(category:Category) {
+  if(category==='sight'||category==='fuel'||category==='camp'||category==='shop'||category==='food'||category==='service') return poiMarkerIcon(category)
+  const glyph=routeMarkerGlyphs[category]
+  const svg=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${glyph}</svg>`
+  return L.divIcon({className:'custom-marker-wrap poi-marker-wrap',html:`<div class="poi-map-marker ${category}" style="--poi-color:${routeMarkerColors[category]}">${svg}</div>`,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-21]})
+}
 const poiMarkerGlyphs: Record<PoiCategory,string> = {
   sight:'<path d="M3 20 9 9l4 6 3-4 5 9H3Z"/><circle cx="17" cy="5" r="2"/>',
   fuel:'<path d="M5 21V4a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v17M5 11h11M16 7h2l3 3v7a2 2 0 0 1-4 0v-4"/>',
