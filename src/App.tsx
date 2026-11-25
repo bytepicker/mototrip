@@ -34,7 +34,7 @@ const sample: Trip = { id:'sample', name:'Выходные на Ладоге', d
 function loadTrips(): Trip[] { try { const raw=localStorage.getItem(STORAGE); return raw ? JSON.parse(raw) as Trip[] : [sample] } catch { return [sample] } }
 function encodeTrip(trip:Trip) { const bytes=new TextEncoder().encode(JSON.stringify(trip)); let binary=''; bytes.forEach(b=>binary+=String.fromCharCode(b)); return btoa(binary).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'') }
 function decodeTrip(value:string):Trip|null { try { const base=value.replaceAll('-','+').replaceAll('_','/'); const binary=atob(base); const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0)); const obj=JSON.parse(new TextDecoder().decode(bytes)) as Trip; if(!obj.name||!Array.isArray(obj.points)) return null; return {...obj,id:uid(),updatedAt:Date.now()} } catch { return null } }
-function markerIcon(category:Category) { return L.divIcon({className:'custom-marker-wrap',html:`<div class="map-marker ${category}"><span>${icons[category]}</span></div>`,iconSize:[38,44],iconAnchor:[19,40],popupAnchor:[0,-38]}) }
+function markerIcon(category:Category) { if(category==='sight'||category==='fuel'||category==='camp'||category==='shop'||category==='food'||category==='service') return poiMarkerIcon(category); return L.divIcon({className:'custom-marker-wrap',html:`<div class="map-marker ${category}"><span>${icons[category]}</span></div>`,iconSize:[38,44],iconAnchor:[19,40],popupAnchor:[0,-38]}) }
 const poiMarkerGlyphs: Record<PoiCategory,string> = {
   sight:'<path d="M3 20 9 9l4 6 3-4 5 9H3Z"/><circle cx="17" cy="5" r="2"/>',
   fuel:'<path d="M5 21V4a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v17M5 11h11M16 7h2l3 3v7a2 2 0 0 1-4 0v-4"/>',
